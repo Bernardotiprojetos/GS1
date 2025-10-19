@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="Jogo Show do Milhão - Responda perguntas sobre GS1 da Sibionics e ganhe até R$ 1.000.000!">
+    <meta name="theme-color" content="#FFD700">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Show do Milhão GS1">
+    <meta name="msapplication-TileColor" content="#FFD700">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.svg">
+    <link rel="icon" type="image/svg+xml" href="icon-192.svg">
+    <title>Show do Milhão</title>
+    
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+    max-width: 100vw;
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.screen {
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#start-screen {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.logo-container {
+    margin-bottom: 50px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.main-title {
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: bold;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3);
+    letter-spacing: 8px;
+    margin: 10px 0;
+}
+
+.main-title.gold {
+    background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: goldShine 3s infinite;
+}
+
+@keyframes goldShine {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+}
+
+.instructions {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 600px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.instructions h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #FFD700;
+}
+
+.instructions p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    text-align: left;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    border: none;
+    padding: 20px 60px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(-2px);
+}
+
+.btn-install {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4);
+    text-transform: uppercase;
+    margin: 10px;
+}
+
+.btn-install:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.6);
+}
+
+.btn-stop {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+    text-transform: uppercase;
+}
+
+.btn-stop:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6);
+}
+
+.game-header {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.prize-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.current-prize, .question-number {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.label {
+    font-size: 0.9rem;
+    color: #FFD700;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.prize-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.number {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.helps-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.help-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 1rem;
+}
+
+.help-btn:hover:not(.used) {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #FFD700;
+    transform: translateY(-3px);
+}
+
+.help-btn.used {
+    opacity: 0.3;
+    cursor: not-allowed;
+    filter: grayscale(100%);
+}
+
+.help-icon {
+    font-size: 1.5rem;
+}
+
+.question-container {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 30px 0;
+    border: 3px solid rgba(255, 215, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.question-text {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    text-align: center;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.answers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+    max-width: 100%;
+}
+
+.answer-btn {
+    background: linear-gradient(135deg, rgba(30, 60, 114, 0.8), rgba(42, 82, 152, 0.8));
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+    font-size: 1.2rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.answer-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.answer-btn:hover:not(.disabled) {
+    border-color: #FFD700;
+    transform: translateX(10px);
+    box-shadow: 0 5px 25px rgba(255, 215, 0, 0.3);
+}
+
+.answer-btn:hover:before {
+    left: 100%;
+}
+
+.answer-btn.correct {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    border-color: #2ecc71;
+    animation: correctAnswer 0.5s ease;
+}
+
+.answer-btn.wrong {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-color: #e74c3c;
+    animation: wrongAnswer 0.5s ease;
+}
+
+.answer-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.answer-btn.eliminated {
+    opacity: 0.2;
+    filter: grayscale(100%);
+    pointer-events: none;
+}
+
+@keyframes correctAnswer {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes wrongAnswer {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.answer-letter {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.3);
+    padding: 5px 15px;
+    border-radius: 10px;
+    margin-right: 15px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.action-buttons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.result-container {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+    backdrop-filter: blur(10px);
+}
+
+.result-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.final-prize {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: bold;
+    color: #FFD700;
+    margin: 30px 0;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    animation: prizeAnimation 1s ease-in-out;
+}
+
+@keyframes prizeAnimation {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.result-message {
+    font-size: 1.5rem;
+    margin: 20px 0 40px;
+    line-height: 1.6;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    border: 3px solid rgba(255, 215, 0, 0.5);
+    animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #FFD700;
+}
+
+#help-content {
+    font-size: 1.3rem;
+    margin: 30px 0;
+    line-height: 1.8;
+}
+
+.prize-table {
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 15px;
+    max-height: 85vh;
+    max-width: 200px;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    z-index: 100;
+    font-size: 0.9rem;
+}
+
+.prize-table h3 {
+    text-align: center;
+    color: #FFD700;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.prize-item {
+    padding: 8px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.prize-item.current {
+    background: rgba(255, 215, 0, 0.3);
+    border: 2px solid #FFD700;
+    font-weight: bold;
+    transform: scale(1.05);
+}
+
+.prize-item.completed {
+    color: #2ecc71;
+}
+
+.prize-item.safe-haven {
+    border-left: 4px solid #FFD700;
+}
+
+@media (max-width: 1200px) {
+    .prize-table {
+        position: static;
+        transform: none;
+        margin: 20px auto;
+        max-width: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .answers-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .help-text {
+        display: none;
+    }
+    
+    .help-btn {
+        padding: 12px;
+    }
+    
+    .prize-info {
+        flex-direction: column;
+    }
+    
+    .main-title {
+        letter-spacing: 4px;
+    }
+    
+    .question-container {
+        padding: 20px;
+        margin: 15px 0;
+    }
+    
+    .question-text {
+        font-size: 1.1rem;
+    }
+    
+    .answer-btn {
+        padding: 15px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 5px;
+    }
+    
+    .question-container {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .answer-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .instructions {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .instructions h3 {
+        font-size: 1.5rem;
+    }
+    
+    .instructions p {
+        font-size: 1rem;
+    }
+    
+    .btn-primary {
+        padding: 15px 40px;
+        font-size: 1.5rem;
+    }
+    
+    .btn-install {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 360px) {
+    .main-title {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .question-text {
+        font-size: 1rem;
+    }
+    
+    .answer-btn {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .btn-primary {
+        padding: 12px 30px;
+        font-size: 1.3rem;
+    }
+}
+
+/* Ajustes para telas muito grandes */
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1600px;
+    }
+    
+    .question-text {
+        font-size: 2rem;
+    }
+    
+    .answer-btn {
+        font-size: 1.4rem;
+        padding: 30px;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.7);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen" class="screen active">
+            <div class="logo-container">
+                <h1 class="main-title">SHOW DO</h1>
+                <h1 class="main-title gold">MILHÃO</h1>
+            </div>
+            <button class="btn-primary" onclick="startGame()">JOGAR</button>
+            <button class="btn-install" id="install-btn" onclick="installApp()" style="display: none;">📱 INSTALAR APP</button>
+            <div class="instructions">
+                <h3>Como Jogar:</h3>
+                <p>• Responda 16 perguntas corretamente</p>
+                <p>• Use as ajudas com sabedoria</p>
+                <p>• Ganhe até R$ 1.000.000!</p>
+            </div>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <div class="prize-info">
+                    <div class="current-prize">
+                        <span class="label">PRÊMIO ATUAL</span>
+                        <span id="current-prize" class="prize-value">R$ 0</span>
+                    </div>
+                    <div class="question-number">
+                        <span class="label">PERGUNTA</span>
+                        <span id="question-number" class="number">1/16</span>
+                    </div>
+                </div>
+                
+                <div class="helps-container">
+                    <button class="help-btn" id="help-cards" onclick="useHelp('cards')" title="Cartas">
+                        <span class="help-icon">🃏</span>
+                        <span class="help-text">Cartas</span>
+                    </button>
+                    <button class="help-btn" id="help-university" onclick="useHelp('university')" title="Universitários">
+                        <span class="help-icon">🎓</span>
+                        <span class="help-text">Universitários</span>
+                    </button>
+                    <button class="help-btn" id="help-audience" onclick="useHelp('audience')" title="Placas">
+                        <span class="help-icon">📊</span>
+                        <span class="help-text">Placas</span>
+                    </button>
+                    <button class="help-btn" id="help-skip" onclick="useHelp('skip')" title="Pular">
+                        <span class="help-icon">⏭️</span>
+                        <span class="help-text">Pular</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div id="question-text" class="question-text"></div>
+            </div>
+
+            <div class="answers-container" id="answers-container"></div>
+
+            <div class="action-buttons">
+                <button class="btn-stop" onclick="stopGame()">PARAR</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <div class="result-container">
+                <h2 id="result-title" class="result-title"></h2>
+                <div id="final-prize" class="final-prize"></div>
+                <p id="result-message" class="result-message"></p>
+                <button class="btn-primary" onclick="resetGame()">JOGAR NOVAMENTE</button>
+            </div>
+        </div>
+
+        <div id="help-modal" class="modal">
+            <div class="modal-content">
+                <h3 id="help-title"></h3>
+                <div id="help-content"></div>
+                <button class="btn-primary" onclick="closeHelpModal()">OK</button>
+            </div>
+        </div>
+
+        <div class="prize-table" id="prize-table">
+            <h3>Premiação</h3>
+            <div class="prizes-list" id="prizes-list"></div>
+        </div>
+    </div>
+
+    <script>
+const PRIZES = [
+    { value: 1000, label: 'R$ 1.000' },
+    { value: 2000, label: 'R$ 2.000' },
+    { value: 3000, label: 'R$ 3.000' },
+    { value: 4000, label: 'R$ 4.000' },
+    { value: 5000, label: 'R$ 5.000', safeHaven: true },
+    { value: 10000, label: 'R$ 10.000' },
+    { value: 20000, label: 'R$ 20.000' },
+    { value: 30000, label: 'R$ 30.000' },
+    { value: 40000, label: 'R$ 40.000' },
+    { value: 50000, label: 'R$ 50.000', safeHaven: true },
+    { value: 100000, label: 'R$ 100.000' },
+    { value: 200000, label: 'R$ 200.000' },
+    { value: 300000, label: 'R$ 300.000' },
+    { value: 400000, label: 'R$ 400.000' },
+    { value: 500000, label: 'R$ 500.000', safeHaven: true },
+    { value: 1000000, label: 'R$ 1.000.000' }
+];
+
+const QUESTIONS = [
+    // NÍVEL FÁCIL: PERGUNTAS 1 E 2
+    { question: "O GS1 utiliza qual tecnologia para enviar os dados ao aplicativo?", answers: ["Wi-Fi", "Bluetooth", "NFC", "Infravermelho"], correct: 1 },
+    { question: "Diferente de outros CGMs, o GS1 dispensa quais tecnologias extras para leitura?", answers: ["Transmissor e bluetooth", "Leitor e NFC", "NFC e transmissor", "Todas as opções acima"], correct: 1 },
+    { question: "Qual é o procedimento necessário para calibrar o sensor de glicose contínuo GS1 da Sibionics?", answers: ["Calibrar duas vezes ao dia com glicemia capilar", "Calibrar apenas no primeiro dia de uso", "Calibrar semanalmente", "Nenhum, o GS1 não precisa de calibração"], correct: 3 },
+    { question: "Qual é o tempo de aquecimento (\"warm-up\") do GS1 após a aplicação antes de fornecer leituras?", answers: ["15 minutos", "30 minutos", "60 minutos", "48 horas"], correct: 2 },
+    { question: "Qual funcionalidade do GS1 ajuda a melhorar a personalização do acompanhamento para cada paciente?", answers: ["Alarmes fixos e iguais para todos os usuários", "Possibilidade de configurar os limites de glicose e alarmes", "Desativação automática dos alarmes após 7 dias", "Apenas vibração sem opção de som"], correct: 1 },
+    { question: "Muitos sistemas de monitoramento contínuo de glicose apresentam limitações importantes quanto aos modelos de smartphones aceitos, o que pode restringir o uso pelos pacientes. No caso do GS1, qual diferencial se destaca nesse aspecto?", answers: ["Funciona apenas em aparelhos dedicados fornecidos pela empresa", "Opera exclusivamente em iPhones das últimas gerações", "É o sistema com a mais ampla compatibilidade de smartphones do mercado, abrangendo Android e iOS", "Necessita de um dispositivo intermediário para transmitir os dados"], correct: 2 },
+    { question: "Durante o uso do GS1, o paciente se afasta do celular a mais de 6 metros. O que acontece com as leituras de glicose nesse período?", answers: ["As leituras são perdidas e não podem ser recuperadas", "O sensor para de medir até voltar para o alcance do celular", "Todas as leituras são registradas pelo sensor e, ao reconectar, os dados são automaticamente sincronizados", "Apenas a última leitura antes da desconexão é salva"], correct: 2 },
+    { question: "Por quantos dias o GS1 pode ser utilizado continuamente?", answers: ["7 dias", "10 dias", "14 dias", "15 dias"], correct: 2 },
+    { question: "Qual é o intervalo entre as leituras de glicose do GS1?", answers: ["A cada 1 minuto", "A cada 5 minutos", "A cada 10 minutos", "A cada 15 minutos"], correct: 1 },
+    { question: "O sensor deve ser removido antes de:", answers: ["Tomar banho", "Dormir", "Fazer ressonância magnética", "Viajar de avião"], correct: 2 },
+    { question: "O aplicativo do GS1 exibe setas de tendência que indicam:", answers: ["Nível de bateria", "Direção da variação glicêmica", "Duração do uso", "Conectividade"], correct: 1 },
+    { question: "Como é possível visualizar os relatórios AGP do GS1?", answers: ["Pelo computador", "No aplicativo do smartphone", "Exportando para PDF", "Todas as anteriores"], correct: 3 },
+    { question: "O GS1 é indicado para pacientes:", answers: ["A partir de 18 anos", "Acima de 60 anos", "A partir de 3 anos", "Apenas crianças e adolescentes"], correct: 2 },
+    { question: "Qual tipo de amostra o GS1 monitora continuamente?", answers: ["Sangue venoso", "Fluido intersticial", "Líquido Sinovial", "Plasma"], correct: 1 },
+    { question: "O que diferencia o GS1 de muitos CGMs do mercado?", answers: ["Maior compatibilidade e custo-benefício", "Uso apenas hospitalar", "Necessidade de leitor", "Duração curta"], correct: 0 },
+    { question: "Para conectar o sensor, o que é necessário?", answers: ["Ler o QR CODE ou incluir o código do sensor", "Escanear o sensor", "Tirar uma foto do sensor dentro do aplicativo", "Nenhuma das alternativas acima"], correct: 0 },
+    { question: "Por quanto tempo o sensor pode ficar submerso?", answers: ["15 minutos em até 1 metro", "30 minutos em até 1 metro", "60 minutos em até 1 metro", "120 minutos em até 1 metro"], correct: 2 },
+    { question: "Quando o período de uso de 14 dias termina, o que deve ser feito com o sensor GS1?", answers: ["Guardá-lo", "Descartá-lo", "Reutilizá-lo após reinicialização", "Enviá-lo de volta ao fabricante"], correct: 1 },
+    
+    // NÍVEL INTERMEDIÁRIO: PERGUNTAS 3 E 4
+    { question: "O GS1 possui certificação IP28, que garante resistência à água. Por quanto tempo ele pode permanecer submerso sem perder a funcionalidade?", answers: ["15 minutos", "30 minutos", "45 minutos", "60 minutos"], correct: 3 },
+    { question: "Um dos diferenciais do GS1 é permitir que o paciente compartilhe suas informações em tempo real com quantos seguidores no aplicativo?", answers: ["Até 20 seguidores", "Até 50 seguidores", "Até 10 seguidores", "Seguidores ilimitados"], correct: 3 },
+    { question: "A Sibionics está presente em quantos países atualmente?", answers: ["10 a 30", "35 a 60", "65 a 100", "acima de 100"], correct: 2 },
+    { question: "Qual é o intervalo de leitura do sensor GS1?", answers: ["20 a 400 mg/dL", "30 a 500 mg/dL", "40 a 450 mg/dL", "50 a 500 mg/dL"], correct: 2 },
+    { question: "Qual é a distância máxima que o sensor GS1 pode ficar do celular mantendo a conexão em tempo real?", answers: ["2 metros", "6 metros", "10 metros", "15 metros"], correct: 1 },
+    { question: "Quando o sensor se desconecta do celular, o que acontece?", answers: ["As leituras são perdidas", "O sensor pausa o funcionamento", "As leituras são registradas e sincronizadas depois", "O sensor reinicia automaticamente"], correct: 2 },
+    { question: "O GS1 possui resistência à água e poeira equivalente a qual classificação?", answers: ["IP28", "IP44", "IP54", "IP68"], correct: 0 },
+    { question: "Durante a desconexão com o app, o GS1:", answers: ["Para de medir", "Perde os dados", "Armazena e sincroniza depois", "Reinicia a contagem"], correct: 2 },
+    { question: "O aplicativo SIBIONICS permite visualizar:", answers: ["Apenas gráficos diários", "Relatórios AGP e tendências", "Apenas alertas sonoros", "Somente o histórico semanal"], correct: 1 },
+    { question: "O GS1 deve ser aplicado em qual região do corpo?", answers: ["Parte frontal da coxa e glúteo", "Parte de trás do braço", "Abdômen e parte de trás do braço", "Glúteo e peitoral"], correct: 1 },
+    { question: "O GS1 exibe setas de tendências que indicam:", answers: ["Condição e humor", "Velocidade e direção da glicose", "Tipo de insulina", "Horário da refeição"], correct: 1 },
+    { question: "O GS1 possui ponta flexível que é inserida:", answers: ["Na camada dérmica superficial", "Na veia subcutânea", "No tecido muscular", "No capilar"], correct: 0 },
+    { question: "Por quanto tempo ficam armazenados os dados dos sensores já utilizados?", answers: ["90 dias", "8 horas", "Tempo indeterminado", "14 dias"], correct: 2 },
+    { question: "No aplicativo consigo inserir:", answers: ["Dieta e glicose sanguínea", "Condições e sono", "Medicamentos e exercício físico", "Todas as alternativas acima"], correct: 3 },
+    { question: "No aplicativo é possível visualizar:", answers: ["Relatório AGP e previsão de variações da glicose", "Registro diário e calibrações", "Relatório AGP e ter comparações diárias", "Nenhuma das alternativas anteriores"], correct: 2 },
+    { question: "Quero adicionar um alimento na minha dieta e não encontrei o que preciso fazer?", answers: ["Entrar em contato com o SAC para que eles possam adicionar", "Não é possível adicionar novos alimentos", "Adicionar o alimento de acordo com a tabela nutricional", "Ingerir um alimento que tenha na base de dados"], correct: 2 },
+    
+    // NÍVEL DIFÍCIL: PERGUNTA 5
+    { question: "O GS1 foi projetado para ser discreto e confortável no uso contínuo. Qual é o peso aproximado do sensor?", answers: ["10,18 g", "7,45 g", "3,84 g", "5,52 g"], correct: 2 },
+    { question: "Muitos CGMs requerem apps específicos ou aparelhos dedicados, limitando pacientes. No GS1, qual é a configuração mínima necessária para que o sistema funcione corretamente?", answers: ["Grande maioria dos smartphones com sistema operacionais a partir Android 10 ou iOS 18", "Grande maioria dos smartphones com sistema operacionais a partir Android 8.1 ou iOS 13", "Dispositivo fornecido exclusivamente pelo fabricante", "Qualquer celular com Bluetooth, sem restrições"], correct: 1 },
+    { question: "O GS1 tem 14 dias de duração. Em média, quantas leituras contínuas de glicose ele fornece nesse período?", answers: ["4.032 leituras", "2.562 leituras", "4.021 leituras", "3.344 leituras"], correct: 2 },
+    { question: "O GS1 tem 14 dias de duração. Quantas leituras contínuas de glicose ele fornece diariamente?", answers: ["176 leituras", "288 leituras", "224 leituras", "260 leituras"], correct: 1 },
+    { question: "A faixa de temperatura ideal de armazenamento do GS1 é:", answers: ["0°C a 40°C", "4°C a 25°C", "4°C a 30°C", "15°C a 35°C"], correct: 1 },
+    { question: "Substâncias que podem interferir nas leituras do GS1 incluem:", answers: ["Vitamina C e ácido acetilsalicílico", "Ferro e zinco", "Magnésio e cálcio", "Cafeína e taurina"], correct: 0 },
+    { question: "Quanto tempo antes de ativar, devo aplicar o sensor?", answers: ["24 horas", "60 minutos", "Aplicar no momento em que for ativar", "48 horas"], correct: 2 },
+    { question: "Entre as alternativas abaixo, qual indica uma montagem correta?", answers: ["Base triangular rente ao sensor, montagem em superfície plana e rígida, e escrita \"sibionics\" rente a base de aplicação", "Base circular rente ao sensor, montagem em superfície plana e rígida, e escrita \"sibionics\" rente a base de aplicação", "Base triangular rente ao sensor, montagem na mão, e escrita \"sibionics\" rente a base de aplicação", "Base circular rente ao sensor, montagem na mão, e escrita \"sibionics\" rente a base de aplicação"], correct: 0 }
+];
+
+let gameState = {
+    currentQuestion: 0,
+    currentPrize: 0,
+    usedHelps: { cards: false, university: false, audience: false, skip: false },
+    questions: [],
+    answering: false
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    createPrizeTable();
+    setupPWA();
+    registerServiceWorker();
+});
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registrado com sucesso:', registration);
+            })
+            .catch(error => {
+                console.log('Falha ao registrar Service Worker:', error);
+            });
+    }
+}
+
+let deferredPrompt;
+
+function setupPWA() {
+    // Detectar se o app pode ser instalado
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) {
+            installBtn.style.display = 'block';
+        }
+    });
+
+    // Detectar se o app foi instalado
+    window.addEventListener('appinstalled', () => {
+        console.log('App instalado com sucesso!');
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) {
+            installBtn.style.display = 'none';
+        }
+    });
+}
+
+function installApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Usuário aceitou instalar o app');
+            } else {
+                console.log('Usuário rejeitou instalar o app');
+            }
+            deferredPrompt = null;
+        });
+    }
+}
+
+function createPrizeTable() {
+    const prizesList = document.getElementById('prizes-list');
+    prizesList.innerHTML = '';
+    PRIZES.slice().reverse().forEach((prize, index) => {
+        const prizeItem = document.createElement('div');
+        prizeItem.className = 'prize-item';
+        if (prize.safeHaven) prizeItem.classList.add('safe-haven');
+        prizeItem.innerHTML = `${16 - index}. ${prize.label}`;
+        prizeItem.dataset.level = 15 - index;
+        prizesList.appendChild(prizeItem);
+    });
+}
+
+function updatePrizeTable() {
+    const prizeItems = document.querySelectorAll('.prize-item');
+    prizeItems.forEach((item) => {
+        item.classList.remove('current', 'completed');
+        const level = parseInt(item.dataset.level);
+        if (level === gameState.currentQuestion) item.classList.add('current');
+        else if (level < gameState.currentQuestion) item.classList.add('completed');
+    });
+}
+
+function startGame() {
+    gameState = {
+        currentQuestion: 0,
+        currentPrize: 0,
+        usedHelps: { cards: false, university: false, audience: false, skip: false },
+        questions: shuffleArray([...QUESTIONS]).slice(0, 16),
+        answering: false
+    };
+    document.querySelectorAll('.help-btn').forEach(btn => {
+        btn.classList.remove('used');
+        btn.disabled = false;
+    });
+    switchScreen('start-screen', 'game-screen');
+    loadQuestion();
+    updatePrizeTable();
+}
+
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+function loadQuestion() {
+    if (gameState.currentQuestion >= 16) {
+        endGame(true);
+        return;
+    }
+    const question = gameState.questions[gameState.currentQuestion];
+    const currentPrizeValue = gameState.currentQuestion > 0 ? PRIZES[gameState.currentQuestion - 1].label : 'R$ 0';
+    document.getElementById('question-text').textContent = question.question;
+    document.getElementById('current-prize').textContent = currentPrizeValue;
+    document.getElementById('question-number').textContent = `${gameState.currentQuestion + 1}/16`;
+    const answersContainer = document.getElementById('answers-container');
+    answersContainer.innerHTML = '';
+    const letters = ['A', 'B', 'C', 'D'];
+    question.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.innerHTML = `<span class="answer-letter">${letters[index]}</span>${answer}`;
+        btn.onclick = () => selectAnswer(index);
+        answersContainer.appendChild(btn);
+    });
+    gameState.answering = false;
+    updatePrizeTable();
+}
+
+function selectAnswer(answerIndex) {
+    if (gameState.answering) return;
+    gameState.answering = true;
+    const question = gameState.questions[gameState.currentQuestion];
+    const buttons = document.querySelectorAll('.answer-btn');
+    buttons.forEach(btn => btn.classList.add('disabled'));
+    setTimeout(() => {
+        if (answerIndex === question.correct) {
+            buttons[answerIndex].classList.add('correct');
+            setTimeout(() => {
+                gameState.currentQuestion++;
+                gameState.currentPrize = PRIZES[gameState.currentQuestion - 1]?.value || 0;
+                if (gameState.currentQuestion >= 16) endGame(true);
+                else loadQuestion();
+            }, 2000);
+        } else {
+            buttons[answerIndex].classList.add('wrong');
+            buttons[question.correct].classList.add('correct');
+            setTimeout(() => endGame(false), 2000);
+        }
+    }, 500);
+}
+
+function useHelp(helpType) {
+    if (gameState.usedHelps[helpType] || gameState.answering) return;
+    gameState.usedHelps[helpType] = true;
+    document.getElementById(`help-${helpType}`).classList.add('used');
+    const question = gameState.questions[gameState.currentQuestion];
+    const modal = document.getElementById('help-modal');
+    const title = document.getElementById('help-title');
+    const content = document.getElementById('help-content');
+    
+    switch(helpType) {
+        case 'cards':
+            title.textContent = '🃏 Cartas';
+            const wrongAnswers = [0, 1, 2, 3].filter(i => i !== question.correct);
+            const toEliminate = shuffleArray(wrongAnswers).slice(0, 2);
+            const buttons = document.querySelectorAll('.answer-btn');
+            toEliminate.forEach(index => buttons[index].classList.add('eliminated'));
+            content.textContent = 'Duas respostas incorretas foram eliminadas!';
+            break;
+        case 'university':
+            title.textContent = '🎓 Universitários';
+            const confidence = Math.random() > 0.2 ? 'alta' : 'média';
+            const letters = ['A', 'B', 'C', 'D'];
+            if (Math.random() > 0.1) {
+                content.textContent = `Os universitários acreditam com ${confidence} confiança que a resposta correta é a letra ${letters[question.correct]}.`;
+            } else {
+                const wrongIndex = [0, 1, 2, 3].filter(i => i !== question.correct)[Math.floor(Math.random() * 3)];
+                content.textContent = `Os universitários acreditam que a resposta correta é a letra ${letters[wrongIndex]}, mas não têm muita certeza.`;
+            }
+            break;
+        case 'audience':
+            title.textContent = '📊 Placas';
+            const percentages = [0, 0, 0, 0];
+            let remaining = 100;
+            percentages[question.correct] = 40 + Math.floor(Math.random() * 30);
+            remaining -= percentages[question.correct];
+            [0, 1, 2, 3].filter(i => i !== question.correct).forEach((index, i, arr) => {
+                if (i === arr.length - 1) percentages[index] = remaining;
+                else {
+                    const value = Math.floor(Math.random() * (remaining / (arr.length - i)));
+                    percentages[index] = value;
+                    remaining -= value;
+                }
+            });
+            const lettersAud = ['A', 'B', 'C', 'D'];
+            let audienceText = 'Resultado das Placas:<br><br>';
+            lettersAud.forEach((letter, i) => {
+                audienceText += `${letter}: ${percentages[i]}%<br>`;
+            });
+            content.innerHTML = audienceText;
+            break;
+        case 'skip':
+            title.textContent = '⏭️ Pular';
+            content.textContent = 'Você pulou esta pergunta e manteve seu prêmio atual!';
+            setTimeout(() => {
+                closeHelpModal();
+                gameState.currentQuestion++;
+                if (gameState.currentQuestion >= 16) endGame(true);
+                else loadQuestion();
+            }, 2000);
+            break;
+    }
+    modal.classList.add('active');
+}
+
+function closeHelpModal() {
+    document.getElementById('help-modal').classList.remove('active');
+}
+
+function stopGame() {
+    if (confirm(`Deseja parar e levar ${PRIZES[gameState.currentQuestion > 0 ? gameState.currentQuestion - 1 : 0].label}?`)) {
+        endGame(true, true);
+    }
+}
+
+function endGame(won, stopped = false) {
+    let finalPrize = 0;
+    let title = '';
+    let message = '';
+    if (stopped) {
+        finalPrize = gameState.currentQuestion > 0 ? PRIZES[gameState.currentQuestion - 1].value : 0;
+        title = '🛑 Você Parou!';
+        message = 'Você decidiu parar e garantir seu prêmio!';
+    } else if (won) {
+        finalPrize = PRIZES[15].value;
+        title = '🎉 PARABÉNS!';
+        message = 'Você ganhou o Show do Milhão!';
+    } else {
+        const safeHavens = PRIZES.filter((p, i) => p.safeHaven && i < gameState.currentQuestion);
+        finalPrize = safeHavens.length > 0 ? safeHavens[safeHavens.length - 1].value : 0;
+        title = '❌ Que Pena!';
+        message = finalPrize > 0 ? `Você errou, mas garantiu o porto seguro!` : 'Você errou e não havia conquistado nenhum porto seguro ainda.';
+    }
+    document.getElementById('result-title').textContent = title;
+    document.getElementById('final-prize').textContent = `R$ ${finalPrize.toLocaleString('pt-BR')}`;
+    document.getElementById('result-message').textContent = message;
+    switchScreen('game-screen', 'result-screen');
+}
+
+function resetGame() {
+    switchScreen('result-screen', 'start-screen');
+}
+
+function switchScreen(fromScreen, toScreen) {
+    document.getElementById(fromScreen).classList.remove('active');
+    document.getElementById(toScreen).classList.add('active');
+}
+    </script>
+</body>
+</html>
+
